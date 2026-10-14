@@ -286,5 +286,5 @@ python smoke_test.py --base-url http://127.0.0.1:8000 --all
 
 ## 8. Repository & Demonstration Links
 
-- **Public GitHub Repository:** `[PENDING MANUAL ACTION: Add your public GitHub repository URL here if uploading to GitHub]`
+- **Public GitHub Repository:** https://github.com/nandu-deadly/VIKMO-DealerDesk
 - **5-Minute Video Walkthrough:** https://youtu.be/gvwejo2sw00?si=22ygByQSYBrONH1y
