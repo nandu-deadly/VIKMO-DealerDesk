@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIKMO PartnerDesk — Dealer & Distributor Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-canvas: #0b1329;
+            --bg-canvas-2: #0f1b3d;
+            --card-surface: #111a33;
+            --input-bg: #090e20;
+            --border-subtle: rgba(56, 189, 248, 0.22);
+            --border-muted: #1e293b;
+            --accent-cyan: #38bdf8;
+            --accent-blue: #0ea5e9;
+            --accent-dark: #0284c7;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --danger-bg: rgba(239, 68, 68, 0.15);
+            --danger-border: rgba(239, 68, 68, 0.4);
+            --danger-text: #fca5a5;
+            --radius-sm: 8px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-canvas);
+            background-image: 
+                radial-gradient(circle at 50% 15%, rgba(56, 189, 248, 0.10), transparent 60%),
+                linear-gradient(160deg, #0b1329 0%, #0f1b3d 60%, #080d1e 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .login-card {
+            background-color: var(--card-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 440px;
+            padding: 2.25rem 2rem;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.75),
+                0 0 35px -5px rgba(56, 189, 248, 0.12);
+            position: relative;
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: var(--accent-cyan);
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.85rem;
+            border-radius: 9999px;
+            margin-bottom: 0.65rem;
+        }
+
+        .brand-badge-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent-cyan);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 6px var(--accent-cyan);
+        }
+
+        .brand-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .brand-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Role Toggle Switch */
+        .role-toggle-wrapper {
+            margin-bottom: 1.5rem;
+        }
+
+        .role-toggle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #0c142b;
+            border: 1px solid #1e293b;
+            border-radius: var(--radius-md);
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 500;
+            padding: 0.6rem 0.75rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .toggle-btn:hover:not(.active) {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, var(--accent-dark), var(--accent-blue));
+            color: #ffffff;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(14, 165, 233, 0.35);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.84rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-input {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1px solid #243254;
+            border-radius: var(--radius-sm);
+            padding: 0.78rem 1rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-input::placeholder {
+            color: #475569;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+        }
+
+        .toggle-pwd-btn {
+            position: absolute;
+            right: 0.75rem;
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.3rem 0.5rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: color 0.2s ease;
+        }
+
+        .toggle-pwd-btn:hover {
+            color: var(--accent-cyan);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-dark) 100%);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            font-family: inherit;
+            padding: 0.85rem 1rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 16px rgba(14, 165, 233, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45);
+            filter: brightness(1.05);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .error-alert {
+            background-color: var(--danger-bg);
+            border: 1px solid var(--danger-border);
+            color: var(--danger-text);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .error-alert svg {
+            flex-shrink: 0;
+        }
+
+        .account-notice {
+            margin-top: 1.35rem;
+            padding: 0.8rem 0.9rem;
+            background: rgba(12, 20, 43, 0.7);
+            border: 1px solid rgba(56, 189, 248, 0.12);
+            border-radius: var(--radius-sm);
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            text-align: center;
+            line-height: 1.45;
+        }
+
+        .account-notice strong {
+            color: var(--text-primary);
+        }
+
+        .support-link-wrapper {
+            margin-top: 1.1rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+        }
+
+        .support-link-wrapper a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .support-link-wrapper a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="brand-header">
+            <div class="brand-badge">
+                <span class="brand-badge-dot"></span>
+                <span>Dealer & Distributor Portal</span>
+            </div>
+            <h1 class="brand-title">VIKMO PartnerDesk</h1>
+            <p class="brand-subtitle">B2B Automotive Spare Parts Distribution Network</p>
+        </div>
+
+        <!-- Segmented Role Toggle Buttons -->
+        <div class="role-toggle-wrapper">
+            <div class="role-toggle" role="tablist">
+                <button type="button" class="toggle-btn active" id="tab-dealer" onclick="setRole('dealer')" role="tab" aria-selected="true">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span>Dealer</span>
+                </button>
+                <button type="button" class="toggle-btn" id="tab-distributor" onclick="setRole('distributor')" role="tab" aria-selected="false">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    <span>Distributor</span>
+                </button>
+            </div>
+        </div>
+
+        {% if error %}
+        <div class="error-alert">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <form method="POST" id="login-form" action="/dealer/login/">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label" for="username" id="username-label">Username or Partner ID</label>
+                <div class="input-wrapper">
+                    <input class="form-input" type="text" id="username" name="username" placeholder="e.g. DLR-001" required autofocus autocomplete="username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <div class="input-wrapper">
+                    <input class="form-input" type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                    <button type="button" class="toggle-pwd-btn" id="toggle-pwd" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility">
+                        <svg id="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        <span id="eye-text">Show</span>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submit-btn">
+                <span>Sign In</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+        </form>
+
+        <div class="account-notice" id="account-notice">
+            Authorized accounts only: Use dealer credentials (<strong>DLR-001</strong> through <strong>DLR-025</strong>) or distributor operations account.
+        </div>
+
+        <div class="support-link-wrapper">
+            Locked out or need access? <a href="mailto:support@vikmo.in">Contact Distributor Support &rarr;</a>
+        </div>
+    </div>
+
+    <script>
+        let currentRole = 'dealer';
+
+        function setRole(role) {
+            currentRole = role;
+            const dealerTab = document.getElementById('tab-dealer');
+            const distTab = document.getElementById('tab-distributor');
+            const form = document.getElementById('login-form');
+            const usernameInput = document.getElementById('username');
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (role === 'distributor') {
+                dealerTab.classList.remove('active');
+                dealerTab.setAttribute('aria-selected', 'false');
+                distTab.classList.add('active');
+                distTab.setAttribute('aria-selected', 'true');
+                form.action = '/distributor/login/';
+                usernameInput.placeholder = 'e.g. distributor';
+            } else {
+                distTab.classList.remove('active');
+                distTab.setAttribute('aria-selected', 'false');
+                dealerTab.classList.add('active');
+                dealerTab.setAttribute('aria-selected', 'true');
+                form.action = '/dealer/login/';
+                usernameInput.placeholder = 'e.g. DLR-001';
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const pwd = document.getElementById('password');
+            const eyeText = document.getElementById('eye-text');
+            const eyeIcon = document.getElementById('eye-icon');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                eyeText.textContent = 'Hide';
+                eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+            } else {
+                pwd.type = 'password';
+                eyeText.textContent = 'Show';
+                eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            }
+        }
+    </script>
+</body>
+</html>

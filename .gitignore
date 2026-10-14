@@ -1,0 +1,13 @@
+﻿.env
+.venv/
+__pycache__/
+*.py[cod]
+backups/
+*.dump
+*.bak
+
+VIKMO_DealerDesk_Assignment_Final.zip
+VIKMO_DealerDesk_Assignment_Final.zip.bak
+before_smoke_cleanup.dump
+
+/VIKMO DealerDesk Assignment/

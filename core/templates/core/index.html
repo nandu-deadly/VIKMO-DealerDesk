@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIKMO DealerDesk — Operations & AI Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --accent-glow: rgba(56, 189, 248, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-badge {
+            background: linear-gradient(135deg, #38bdf8, #6366f1);
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+            color: var(--text-main);
+            background: var(--bg-tertiary);
+        }
+
+        .nav-btn.active {
+            color: var(--accent);
+            background: rgba(56, 189, 248, 0.1);
+            border-color: rgba(56, 189, 248, 0.3);
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent);
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .metric-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Generic Card */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        /* Controls */
+        .controls-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 0.65rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #0f172a;
+            font-weight: 600;
+            padding: 0.65rem 1.25rem;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 0.75rem 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+        }
+
+        tr:hover td {
+            background: rgba(51, 65, 85, 0.25);
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-draft { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-confirmed { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-cancelled { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        /* Pagination Controls */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .pagination-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.45rem 0.85rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: var(--accent);
+            color: #0f172a;
+            border-color: var(--accent);
+        }
+
+        .page-btn.active {
+            background: var(--accent);
+            color: #0f172a;
+            font-weight: 700;
+            border-color: var(--accent);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .pagination-summary {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .page-jump-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .page-jump-input {
+            width: 60px !important;
+            padding: 0.35rem 0.5rem !important;
+            text-align: center;
+            font-size: 0.85rem !important;
+        }
+
+        /* Assistant Chat UI */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 520px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.25rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 0.85rem 1.15rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .chat-bubble.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .chat-bubble.assistant {
+            align-self: flex-start;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-bottom-left-radius: 2px;
+        }
+
+        .chat-meta {
+            font-size: 0.75rem;
+            margin-top: 0.4rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .cited-pill {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        .chat-input-bar {
+            display: flex;
+            padding: 0.85rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            gap: 0.5rem;
+        }
+
+        /* Notifications & Spinners */
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top: 2px solid var(--accent);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert-box {
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .alert-success { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .alert-error { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <span class="brand-badge">VIKMO</span>
+            <span class="brand-title">DealerDesk Ops</span>
+        </div>
+        <ul class="nav-tabs">
+            <li><button class="nav-btn active" onclick="switchTab('dashboard')">Dashboard</button></li>
+            <li><button class="nav-btn" onclick="switchTab('products')">Products</button></li>
+            <li><button class="nav-btn" onclick="switchTab('orders')">Orders</button></li>
+            <li><button class="nav-btn" onclick="switchTab('assistant')">AI Assistant</button></li>
+            <li><button class="nav-btn" onclick="switchTab('forecasting')">Forecasting</button></li>
+            <li><button class="nav-btn" onclick="switchTab('supplier')">Supplier Sync</button></li>
+        </ul>
+        <div style="display: flex; gap: 0.6rem; align-items: center;">
+            <a href="/dealer/login/" class="btn" style="padding: 0.4rem 0.85rem; font-size: 0.8rem; text-decoration: none; font-weight: 600;">Dealer Portal</a>
+            <a href="/distributor/login/" class="btn btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.8rem; text-decoration: none; font-weight: 600;">Distributor Login</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Notification box -->
+        <div id="global-alert" class="alert-box"></div>
+
+        <!-- 1. DASHBOARD TAB -->
+        <section id="tab-dashboard" class="tab-content active">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Catalogue Products</div>
+                    <div class="metric-value" id="stat-products">600</div>
+                    <div class="metric-sub">Authoritative catalogue count</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Active Dealers</div>
+                    <div class="metric-value" id="stat-dealers">25</div>
+                    <div class="metric-sub">Registered distribution network</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Forecast SKUs</div>
+                    <div class="metric-value" id="stat-forecast">40</div>
+                    <div class="metric-sub">160 weekly future predictions</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">System Health</div>
+                    <div class="metric-value" style="color: var(--success);" id="stat-health">ONLINE</div>
+                    <div class="metric-sub">PostgreSQL 18 & REST APIs</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Quick Operations Overview</span>
+                    <button class="btn btn-secondary" onclick="loadDashboardOverview()">Refresh Data</button>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+                    VIKMO DealerDesk is the comprehensive automotive spare parts distribution platform.
+                    Access live real-time warehouse inventory, place grounded draft orders, consult the Gemini-powered parts assistant, and view machine-learning replenishment suggestions.
+                </p>
+            </div>
+        </section>
+
+        <!-- 2. PRODUCTS TAB -->
+        <section id="tab-products" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <span class="card-title">Catalogue & Live Inventory</span>
+                        <div id="prod-count-summary" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+                            Showing 1–20 of 600 catalogue products
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <button class="btn btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;" onclick="resetProductFilters()">Clear Filters</button>
+                    </div>
+                </div>
+
+                <div class="controls-row">
+                    <div class="input-group" style="flex: 2; min-width: 220px;">
+                        <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Search SKU / Name / Brand</label>
+                        <input type="text" id="prod-search" placeholder="Search by name, SKU, or brand..." onkeyup="if(event.key==='Enter') searchProducts(1)">
+                    </div>
+                    <div class="input-group" style="min-width: 170px;">
+                        <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Category</label>
+                        <select id="prod-category" onchange="searchProducts(1)">
+                            <option value="">All Categories (11)</option>
+                            <option value="Body & Styling">Body & Styling</option>
+                            <option value="Brakes">Brakes</option>
+                            <option value="Car Care">Car Care</option>
+                            <option value="Controls & Grips">Controls & Grips</option>
+                            <option value="Drivetrain">Drivetrain</option>
+                            <option value="Engine & Oils">Engine & Oils</option>
+                            <option value="Filters">Filters</option>
+                            <option value="Lighting & Electrical">Lighting & Electrical</option>
+                            <option value="Rider Gear">Rider Gear</option>
+                            <option value="Tyres & Tubes">Tyres & Tubes</option>
+                            <option value="Universal Accessories">Universal Accessories</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="min-width: 170px;">
+                        <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Vehicle Fitment</label>
+                        <input type="text" id="prod-vehicle" placeholder="e.g. Pulsar 150, Activa..." onkeyup="if(event.key==='Enter') searchProducts(1)">
+                    </div>
+                    <div class="input-group" style="max-width: 130px;">
+                        <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Per Page</label>
+                        <select id="prod-page-size" onchange="searchProducts(1)">
+                            <option value="20" selected>20 per page</option>
+                            <option value="50">50 per page</option>
+                            <option value="100">100 per page</option>
+                        </select>
+                    </div>
+                    <div style="align-self: flex-end;">
+                        <button class="btn" id="btn-search-products" onclick="searchProducts(1)">Search</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="products-table">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Fitment</th>
+                                <th>Price</th>
+                                <th>Live Stock</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-body">
+                            <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Loading catalogue...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Container -->
+                <div class="pagination-container" id="products-pagination-container">
+                    <div class="pagination-summary" id="prod-pagination-summary">
+                        Page 1 of 30 &bull; 600 total products
+                    </div>
+
+                    <div class="pagination-nav" id="prod-pagination-nav">
+                        <!-- Rendered dynamically -->
+                    </div>
+
+                    <div class="page-jump-box">
+                        <span>Go to:</span>
+                        <input type="number" id="prod-jump-page" class="page-jump-input" min="1" max="30" value="1" onkeyup="if(event.key==='Enter') jumpToProductPage()">
+                        <button class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="jumpToProductPage()">Go</button>
+                    </div>
+                </div>
+
+                <!-- Continuous browsing: Load More button -->
+                <div style="margin-top: 1rem; text-align: center;">
+                    <button class="btn btn-secondary" id="btn-load-more" onclick="loadMoreProducts()" style="display: none;">
+                        Load Next Page (+20)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. ORDERS TAB -->
+        <section id="tab-orders" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Create Draft Order</span>
+                </div>
+                <div class="controls-row">
+                    <div class="input-group" style="max-width: 250px;">
+                        <label style="font-size: 0.8rem; color: var(--text-muted);">Dealer ID</label>
+                        <select id="order-dealer-select">
+                            <option value="">Select Dealer...</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label style="font-size: 0.8rem; color: var(--text-muted);">Product SKU</label>
+                        <input type="text" id="order-sku" placeholder="e.g. BRK-1044">
+                    </div>
+                    <div class="input-group" style="max-width: 140px;">
+                        <label style="font-size: 0.8rem; color: var(--text-muted);">Quantity</label>
+                        <input type="number" id="order-qty" value="1" min="1">
+                    </div>
+                    <div style="align-self: flex-end;">
+                        <button class="btn" onclick="createDraftOrder()">Create DRAFT</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Orders Management</span>
+                    <button class="btn btn-secondary" onclick="loadOrders()">Refresh Orders</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order Number</th>
+                                <th>Dealer ID</th>
+                                <th>Status</th>
+                                <th>Subtotal</th>
+                                <th>Tax (18%)</th>
+                                <th>Grand Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-body">
+                            <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Loading orders...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. AI ASSISTANT TAB -->
+        <section id="tab-assistant" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Dealer Parts Assistant (GenAI)</span>
+                    <div style="display:flex; align-items:center; gap: 0.75rem;">
+                        <label style="font-size: 0.8rem; color: var(--text-muted);">Acting Dealer:</label>
+                        <select id="chat-dealer-select" style="padding: 0.35rem 0.75rem;">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chat-box">
+                        <div class="chat-bubble assistant">
+                            Hello! I am the VIKMO Dealer Assistant. I can look up fitments, check live stock and pricing, and draft orders directly into the database.
+                        </div>
+                    </div>
+                    <div class="chat-input-bar">
+                        <input type="text" id="chat-input" placeholder="Ask about parts (e.g. 'Do you have brake pads for a Pulsar 150?')..." onkeyup="if(event.key==='Enter') sendChatMessage()">
+                        <button class="btn" id="chat-send-btn" onclick="sendChatMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. FORECASTING & REORDER TAB -->
+        <section id="tab-forecasting" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Inventory Reorder Recommendations</span>
+                    <button class="btn btn-secondary" onclick="loadReorders()">Recalculate with Live Stock</button>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+                    Reorder points are computed dynamically using: <code>lead_time_demand + ceil(1.65 × sigma × √L)</code>. Current warehouse stock directly dictates suggested reorder quantities.
+                </p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Live Stock</th>
+                                <th>Lead Time (wks)</th>
+                                <th>Lead Time Demand</th>
+                                <th>Safety Stock</th>
+                                <th>Reorder Point</th>
+                                <th>Suggested Reorder</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reorder-body">
+                            <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Loading reorder metrics...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. SUPPLIER SYNC TAB -->
+        <section id="tab-supplier" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Supplier Catalogue Synchronization</span>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.25rem;">
+                    Trigger an atomic synchronization against the external supplier API endpoint.
+                    Retries up to 5 times on rate limits (429) and server errors (5xx), filters invalid prices, deduplicates entries, and updates catalogue pricing while keeping local warehouse inventory intact.
+                </p>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <button class="btn btn-success" id="sync-trigger-btn" onclick="triggerSupplierSync()">
+                        <span>Trigger Full Supplier Sync</span>
+                    </button>
+                    <span id="sync-status-msg" style="font-size: 0.9rem; color: var(--text-muted);"></span>
+                </div>
+
+                <div id="sync-result-card" style="margin-top: 1.5rem; display: none; background: rgba(15, 23, 42, 0.6); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                    <h4 style="margin-bottom: 0.75rem; color: var(--accent);">Last Sync Summary</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; font-size: 0.9rem;">
+                        <div>Created Products: <strong id="sync-res-created">0</strong></div>
+                        <div>Updated Products: <strong id="sync-res-updated">0</strong></div>
+                        <div>Unchanged Products: <strong id="sync-res-unchanged">0</strong></div>
+                        <div>Rejected Items: <strong id="sync-res-rejected">0</strong></div>
+                        <div>Pages Fetched: <strong id="sync-res-pages">0</strong></div>
+                        <div>Requests Made: <strong id="sync-res-requests">0</strong></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        VIKMO DealerDesk Operations Platform &bull; PostgreSQL 18 &bull; Django REST Framework &bull; AI/ML Intern Track
+    </footer>
+
+    <script>
+        // Session ID generator
+        const SESSION_ID = 'sess-' + Math.random().toString(36).substring(2, 9);
+
+        function showAlert(msg, isError = false) {
+            const el = document.getElementById('global-alert');
+            el.className = 'alert-box ' + (isError ? 'alert-error' : 'alert-success');
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabId === 'products') searchProducts();
+            if (tabId === 'orders') loadOrders();
+            if (tabId === 'forecasting') loadReorders();
+        }
+
+        // Initialize Dealers Select
+        async function loadDealers() {
+            try {
+                const res = await fetch('/api/dealers/?page_size=50');
+                if (!res.ok) return;
+                const data = await res.json();
+                const selOrder = document.getElementById('order-dealer-select');
+                const selChat = document.getElementById('chat-dealer-select');
+                
+                selOrder.innerHTML = '';
+                selChat.innerHTML = '';
+
+                data.results.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.textContent = `${d.dealer_code} - ${d.name} (${d.city})`;
+                    selOrder.appendChild(opt);
+                    selChat.appendChild(opt.cloneNode(true));
+                });
+            } catch (err) {
+                console.error("Failed loading dealers", err);
+            }
+        }
+
+        // 1. Dashboard
+        async function loadDashboardOverview() {
+            try {
+                const [pRes, dRes] = await Promise.all([
+                    fetch('/api/products/?page_size=1'),
+                    fetch('/api/dealers/?page_size=1')
+                ]);
+                if (pRes.ok) {
+                    const pData = await pRes.json();
+                    document.getElementById('stat-products').textContent = pData.count || 600;
+                }
+                if (dRes.ok) {
+                    const dData = await dRes.json();
+                    document.getElementById('stat-dealers').textContent = dData.count || 25;
+                }
+                showAlert("Dashboard metrics refreshed.");
+            } catch (e) {
+                showAlert("Error refreshing dashboard.", true);
+            }
+        }
+
+        // 2. Products
+        let currentProductPage = 1;
+        let totalProductPages = 1;
+        let totalProductCount = 0;
+        let isAppending = false;
+
+        async function searchProducts(page = 1, append = false) {
+            currentProductPage = page;
+            isAppending = append;
+
+            const query = document.getElementById('prod-search').value.trim();
+            const cat = document.getElementById('prod-category').value;
+            const vehicle = document.getElementById('prod-vehicle') ? document.getElementById('prod-vehicle').value.trim() : '';
+            const pageSize = parseInt(document.getElementById('prod-page-size').value) || 20;
+
+            const tbody = document.getElementById('products-body');
+            const summaryEl = document.getElementById('prod-count-summary');
+            const pagSummaryEl = document.getElementById('prod-pagination-summary');
+            const loadMoreBtn = document.getElementById('btn-load-more');
+
+            if (!append) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="spinner"></div> Loading catalogue products...</td></tr>';
+            }
+
+            let url = `/api/products/?page=${page}&page_size=${pageSize}`;
+            if (query) url += `&search=${encodeURIComponent(query)}`;
+            if (cat) url += `&category=${encodeURIComponent(cat)}`;
+            if (vehicle) url += `&vehicle=${encodeURIComponent(vehicle)}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (!res.ok) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--danger);">Failed to load products: ${data.error ? data.error.message : 'Server error'}</td></tr>`;
+                    return;
+                }
+
+                totalProductCount = data.count || 0;
+                totalProductPages = Math.ceil(totalProductCount / pageSize) || 1;
+
+                if (!append) {
+                    tbody.innerHTML = '';
+                }
+
+                if (!data.results || data.results.length === 0) {
+                    if (!append) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted); padding: 2rem;">No products found matching criteria.</td></tr>';
+                        if (summaryEl) summaryEl.textContent = 'Showing 0 of 0 products';
+                        if (pagSummaryEl) pagSummaryEl.textContent = 'Page 0 of 0 • 0 total products';
+                        renderPaginationControls(1, 0);
+                        if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+                    }
+                    return;
+                }
+
+                const currentLoaded = append ? tbody.querySelectorAll('tr').length + data.results.length : data.results.length;
+                const startIdx = append ? 1 : ((page - 1) * pageSize) + 1;
+                const endIdx = append ? currentLoaded : Math.min(page * pageSize, totalProductCount);
+
+                if (summaryEl) summaryEl.textContent = `Showing ${startIdx}–${endIdx} of ${totalProductCount} catalogue products`;
+                if (pagSummaryEl) pagSummaryEl.textContent = `Page ${page} of ${totalProductPages} • ${totalProductCount} total products`;
+
+                data.results.forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong style="color: var(--accent); font-family: monospace;">${p.sku}</strong></td>
+                        <td>${p.name}</td>
+                        <td><span style="font-size: 0.8rem; background: rgba(56, 189, 248, 0.1); padding: 0.15rem 0.5rem; border-radius: 4px;">${p.category}</span></td>
+                        <td>${p.vehicle_fitment}</td>
+                        <td>₹${p.price}</td>
+                        <td><span style="font-weight: 600; color: ${p.stock > 0 ? 'var(--success)' : 'var(--danger)'};">${p.stock}</span></td>
+                        <td>
+                            <button class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="prefillOrderSku('${p.sku}')">
+                                + Order
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                renderPaginationControls(page, totalProductPages);
+
+                const jumpInput = document.getElementById('prod-jump-page');
+                if (jumpInput) {
+                    jumpInput.max = totalProductPages;
+                    jumpInput.value = page;
+                }
+
+                if (loadMoreBtn) {
+                    if (endIdx < totalProductCount) {
+                        loadMoreBtn.style.display = 'inline-flex';
+                        loadMoreBtn.textContent = `Load Next Page (+${Math.min(pageSize, totalProductCount - endIdx)})`;
+                    } else {
+                        loadMoreBtn.style.display = 'none';
+                    }
+                }
+
+            } catch (err) {
+                console.error("Products error:", err);
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--danger);">Network error loading catalogue products.</td></tr>';
+            }
+        }
+
+        function renderPaginationControls(current, total) {
+            const nav = document.getElementById('prod-pagination-nav');
+            if (!nav) return;
+            nav.innerHTML = '';
+
+            if (total <= 1) return;
+
+            // First button
+            const btnFirst = document.createElement('button');
+            btnFirst.className = 'page-btn';
+            btnFirst.innerHTML = '&laquo; First';
+            btnFirst.title = 'Go to first page';
+            btnFirst.disabled = current <= 1;
+            btnFirst.onclick = () => searchProducts(1);
+            nav.appendChild(btnFirst);
+
+            // Prev button
+            const btnPrev = document.createElement('button');
+            btnPrev.className = 'page-btn';
+            btnPrev.innerHTML = '&lsaquo; Prev';
+            btnPrev.title = 'Previous page';
+            btnPrev.disabled = current <= 1;
+            btnPrev.onclick = () => searchProducts(current - 1);
+            nav.appendChild(btnPrev);
+
+            // Calculate visible window
+            let start = Math.max(1, current - 2);
+            let end = Math.min(total, current + 2);
+
+            if (start > 1) {
+                const b1 = document.createElement('button');
+                b1.className = 'page-btn';
+                b1.textContent = '1';
+                b1.onclick = () => searchProducts(1);
+                nav.appendChild(b1);
+                if (start > 2) {
+                    const dots = document.createElement('span');
+                    dots.style.color = 'var(--text-muted)';
+                    dots.style.padding = '0 0.25rem';
+                    dots.textContent = '...';
+                    nav.appendChild(dots);
+                }
+            }
+
+            for (let i = start; i <= end; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'page-btn' + (i === current ? ' active' : '');
+                btn.textContent = i;
+                btn.onclick = () => searchProducts(i);
+                nav.appendChild(btn);
+            }
+
+            if (end < total) {
+                if (end < total - 1) {
+                    const dots = document.createElement('span');
+                    dots.style.color = 'var(--text-muted)';
+                    dots.style.padding = '0 0.25rem';
+                    dots.textContent = '...';
+                    nav.appendChild(dots);
+                }
+                const bLast = document.createElement('button');
+                bLast.className = 'page-btn';
+                bLast.textContent = total;
+                bLast.onclick = () => searchProducts(total);
+                nav.appendChild(bLast);
+            }
+
+            // Next button
+            const btnNext = document.createElement('button');
+            btnNext.className = 'page-btn';
+            btnNext.innerHTML = 'Next &rsaquo;';
+            btnNext.title = 'Next page';
+            btnNext.disabled = current >= total;
+            btnNext.onclick = () => searchProducts(current + 1);
+            nav.appendChild(btnNext);
+
+            // Last button
+            const btnLast = document.createElement('button');
+            btnLast.className = 'page-btn';
+            btnLast.innerHTML = 'Last &raquo;';
+            btnLast.title = 'Go to last page';
+            btnLast.disabled = current >= total;
+            btnLast.onclick = () => searchProducts(total);
+            nav.appendChild(btnLast);
+        }
+
+        function jumpToProductPage() {
+            const input = document.getElementById('prod-jump-page');
+            const page = parseInt(input.value);
+            if (page >= 1 && page <= totalProductPages) {
+                searchProducts(page);
+            } else {
+                showAlert(`Please enter a page number between 1 and ${totalProductPages}`, true);
+            }
+        }
+
+        function loadMoreProducts() {
+            if (currentProductPage < totalProductPages) {
+                searchProducts(currentProductPage + 1, true);
+            }
+        }
+
+        function resetProductFilters() {
+            document.getElementById('prod-search').value = '';
+            document.getElementById('prod-category').value = '';
+            if (document.getElementById('prod-vehicle')) document.getElementById('prod-vehicle').value = '';
+            document.getElementById('prod-page-size').value = '20';
+            searchProducts(1);
+        }
+
+        function prefillOrderSku(sku) {
+            document.getElementById('order-sku').value = sku;
+            switchTab('orders');
+            showAlert(`Selected SKU ${sku} for Draft Order. Choose dealer and quantity.`);
+        }
+
+        // 3. Orders
+        async function loadOrders() {
+            const tbody = document.getElementById('orders-body');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="spinner"></div> Loading...</td></tr>';
+            try {
+                const res = await fetch('/api/orders/?page_size=25');
+                const data = await res.json();
+                tbody.innerHTML = '';
+                if (!data.results || data.results.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No orders recorded yet.</td></tr>';
+                    return;
+                }
+                data.results.forEach(o => {
+                    const tr = document.createElement('tr');
+                    let statusClass = 'badge-draft';
+                    if (o.status === 'CONFIRMED') statusClass = 'badge-confirmed';
+                    if (o.status === 'CANCELLED') statusClass = 'badge-cancelled';
+
+                    let actionsHtml = '';
+                    if (o.status === 'DRAFT') {
+                        actionsHtml = `
+                            <button class="btn btn-success" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="confirmOrder('${o.order_number}')">Confirm</button>
+                            <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="cancelOrder('${o.order_number}')">Cancel</button>
+                        `;
+                    }
+
+                    tr.innerHTML = `
+                        <td><strong style="font-family: monospace; color: var(--accent);">${o.order_number}</strong></td>
+                        <td>${o.dealer_id}</td>
+                        <td><span class="badge ${statusClass}">${o.status}</span></td>
+                        <td>₹${o.subtotal}</td>
+                        <td>₹${o.tax_total}</td>
+                        <td><strong>₹${o.grand_total}</strong></td>
+                        <td>${actionsHtml}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--danger);">Failed to load orders.</td></tr>';
+            }
+        }
+
+        async function createDraftOrder() {
+            const dealerId = parseInt(document.getElementById('order-dealer-select').value);
+            const sku = document.getElementById('order-sku').value.trim();
+            const qty = parseInt(document.getElementById('order-qty').value);
+
+            if (!dealerId || !sku || !qty) {
+                showAlert("Please enter Dealer, SKU, and a valid quantity.", true);
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/orders/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        dealer_id: dealerId,
+                        items: [{ sku: sku, quantity: qty }]
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showAlert(`Draft Order created: ${data.order_number} (Total: ₹${data.grand_total})`);
+                    document.getElementById('order-sku').value = '';
+                    loadOrders();
+                } else {
+                    showAlert(data.error ? data.error.message : "Order creation failed", true);
+                }
+            } catch (err) {
+                showAlert("Network error creating order.", true);
+            }
+        }
+
+        async function confirmOrder(orderNo) {
+            try {
+                const res = await fetch(`/api/orders/${orderNo}/confirm/`, { method: 'POST' });
+                const data = await res.json();
+                if (res.ok) {
+                    showAlert(`Order ${orderNo} CONFIRMED! Inventory stock decremented.`);
+                    loadOrders();
+                } else {
+                    showAlert(data.error ? data.error.message : "Confirmation failed", true);
+                }
+            } catch (err) {
+                showAlert("Error confirming order", true);
+            }
+        }
+
+        async function cancelOrder(orderNo) {
+            try {
+                const res = await fetch(`/api/orders/${orderNo}/cancel/`, { method: 'POST' });
+                const data = await res.json();
+                if (res.ok) {
+                    showAlert(`Order ${orderNo} CANCELLED.`);
+                    loadOrders();
+                } else {
+                    showAlert(data.error ? data.error.message : "Cancellation failed", true);
+                }
+            } catch (err) {
+                showAlert("Error cancelling order", true);
+            }
+        }
+
+        // 4. AI Assistant
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            const dealerSelect = document.getElementById('chat-dealer-select');
+            let dealerId = parseInt(dealerSelect.value);
+            if (!dealerId && dealerSelect.options.length > 0) {
+                dealerId = parseInt(dealerSelect.options[0].value);
+            }
+            const btn = document.getElementById('chat-send-btn');
+            const chatBox = document.getElementById('chat-box');
+
+            if (!msg) return;
+
+            // Render User bubble
+            const userBubble = document.createElement('div');
+            userBubble.className = 'chat-bubble user';
+            userBubble.textContent = msg;
+            chatBox.appendChild(userBubble);
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Loading state
+            btn.disabled = true;
+            const loaderBubble = document.createElement('div');
+            loaderBubble.className = 'chat-bubble assistant';
+            loaderBubble.innerHTML = '<div class="spinner"></div> Consulting inventory & catalogue...';
+            chatBox.appendChild(loaderBubble);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const res = await fetch('/api/assistant/chat/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: SESSION_ID,
+                        dealer_id: dealerId,
+                        message: msg
+                    })
+                });
+                const data = await res.json();
+                chatBox.removeChild(loaderBubble);
+
+                const botBubble = document.createElement('div');
+                botBubble.className = 'chat-bubble assistant';
+                
+                let html = data.reply || "No reply received.";
+                if (data.cited_skus && data.cited_skus.length > 0) {
+                    html += '<div class="chat-meta"><strong>Cited:</strong> ' + data.cited_skus.map(s => `<span class="cited-pill">${s}</span>`).join(' ') + '</div>';
+                }
+                if (data.actions && data.actions.length > 0) {
+                    html += '<div class="chat-meta" style="color: var(--success);"><strong>Actions:</strong> ' + data.actions.map(a => `${a.type} (${a.order_number})`).join(', ') + '</div>';
+                }
+
+                botBubble.innerHTML = html;
+                chatBox.appendChild(botBubble);
+            } catch (err) {
+                chatBox.removeChild(loaderBubble);
+                const errBubble = document.createElement('div');
+                errBubble.className = 'chat-bubble assistant';
+                errBubble.style.borderColor = 'var(--danger)';
+                errBubble.textContent = "Error communicating with assistant endpoint.";
+                chatBox.appendChild(errBubble);
+            } finally {
+                btn.disabled = false;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        // 5. Forecasting & Reorders
+        async function loadReorders() {
+            const tbody = document.getElementById('reorder-body');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="spinner"></div> Computing safety stock & reorder points...</td></tr>';
+            try {
+                const res = await fetch('/api/reorder-suggestions/');
+                const data = await res.json();
+                tbody.innerHTML = '';
+                if (!data.results || data.results.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No reorder data available.</td></tr>';
+                    return;
+                }
+                data.results.forEach(r => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong style="color: var(--accent); font-family: monospace;">${r.sku}</strong></td>
+                        <td>${r.current_stock}</td>
+                        <td>${r.lead_time_weeks}</td>
+                        <td>${r.lead_time_demand}</td>
+                        <td>${r.safety_stock}</td>
+                        <td>${r.reorder_point}</td>
+                        <td><strong style="color: ${r.reorder_qty > 0 ? 'var(--warning)' : 'var(--text-muted)'};">${r.reorder_qty}</strong></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--danger);">Failed to load reorder suggestions.</td></tr>';
+            }
+        }
+
+        // 6. Supplier Sync
+        async function triggerSupplierSync() {
+            const btn = document.getElementById('sync-trigger-btn');
+            const msg = document.getElementById('sync-status-msg');
+            const card = document.getElementById('sync-result-card');
+
+            btn.disabled = true;
+            msg.textContent = "Fetching paginated feed and retrying on limits...";
+
+            try {
+                const res = await fetch('/api/sync/supplier/', { method: 'POST' });
+                const data = await res.json();
+                if (res.ok) {
+                    showAlert("Supplier sync completed successfully!");
+                    msg.textContent = `Completed: ${data.created} created, ${data.updated} updated, ${data.unchanged} unchanged.`;
+                    
+                    document.getElementById('sync-res-created').textContent = data.created;
+                    document.getElementById('sync-res-updated').textContent = data.updated;
+                    document.getElementById('sync-res-unchanged').textContent = data.unchanged;
+                    document.getElementById('sync-res-rejected').textContent = data.rejected ? data.rejected.length : 0;
+                    document.getElementById('sync-res-pages').textContent = data.pages_fetched;
+                    document.getElementById('sync-res-requests').textContent = data.requests_made;
+                    card.style.display = 'block';
+                } else {
+                    showAlert(data.error ? data.error.message : "Sync failed", true);
+                    msg.textContent = `Failed with status ${res.status}: ${data.error ? data.error.message : 'Error'}`;
+                }
+            } catch (err) {
+                showAlert("Network connection error during sync.", true);
+                msg.textContent = "Connection failed.";
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // On Load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDealers();
+            loadDashboardOverview();
+        });
+    </script>
+</body>
+</html>
+

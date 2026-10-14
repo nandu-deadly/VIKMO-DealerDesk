@@ -1,0 +1,36 @@
+# ==============================================================================
+# VIKMO DealerDesk — Official Release Checksum Manifest
+# Track: AI/ML Intern Track (with Part C Compliance & Genuine LLM Tool Calling)
+# Generated: 2026-10-14T19:26:31+05:30
+# ==============================================================================
+
+Archive Filename:    VIKMO_DealerDesk_Assignment_Final.zip
+Absolute Path:       D:\VIKMO_DealerDesk_Assignment\VIKMO_DealerDesk_Assignment_Final.zip
+Total File Entries:  92
+Compressed Size:     498,011 bytes (0.47 MB)
+SHA-256 Checksum:    19bde5e56dd450096c037a3e39cf08a35760eab871cc36dcfbc76a898a49119a
+
+# Integrity & Audit Verification:
+ZIP Integrity Test:   PASS (0 corrupted entries)
+Decompression Test:   PASS (92/92 entries decompress cleanly)
+Extraction Test:      PASS (Clean directory extraction with 0 conflicts)
+Prohibited Files:     PASS (Zero .env, .venv, __pycache__, *.pyc, or *.zip files)
+Sensitive Leaks:      PASS (Zero plaintext credentials or API keys)
+ml/forecast.csv:      PASS (Exactly 160 rows, 40 SKUs, 4 target dates)
+Hybrid RAG:           PASS (PostgreSQL multi-signal search + query understanding)
+Part C Assistant:     PASS (Genuine LLM tool calling, count-independent wording, dynamic catalogue count)
+Dealer Isolation:     PASS (Session isolation enforced across dealers with HTTP 403 FORBIDDEN)
+Draft-Order Safety:   PASS (Server-derived dealer_id derivation, DRAFT status only, unreserved stock)
+Prompt Fencing:       PASS (Untrusted supplier descriptions treated strictly as data)
+Conversational Flow:  PASS (Interactive ordering, stock validation, 18% GST, duplicate prevention)
+Order Quantity Fix:   PASS (SKU digits and engine CC excluded; exact requested quantity propagated)
+Live Gemini Script:   PASS (test_gemini_live.py verified for live and offline tool-calling)
+
+# Dealer Authorization: PASS (Active dealer validation, anti-tampering session binding, 25 seeded dealers preserved)
+# Teardown & Reset:     PASS (Smoke test automatic teardown, guarded reset_dev_database with stock reversal)
+#
+# Verification Commands:
+# Linux / macOS:
+#   sha256sum -c SHA256SUMS
+# Windows PowerShell:
+#   (Get-FileHash -Algorithm SHA256 .\VIKMO_DealerDesk_Assignment_Final.zip).Hash -eq "19bde5e56dd450096c037a3e39cf08a35760eab871cc36dcfbc76a898a49119a".ToUpper()

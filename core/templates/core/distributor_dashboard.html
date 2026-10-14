@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIKMO DealerDesk — Central Distributor Operations Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --accent-glow: rgba(16, 185, 129, 0.2);
+            --cyan: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.85rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-badge {
+            background: linear-gradient(135deg, #10b981, #0284c7);
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .distributor-chip {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .distributor-chip .role {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+            overflow-x: auto;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .nav-btn:hover {
+            color: var(--text-main);
+            background: var(--bg-tertiary);
+        }
+
+        .nav-btn.active {
+            color: var(--accent);
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .tab-badge {
+            background: var(--warning);
+            color: #0f172a;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.1rem 0.4rem;
+            border-radius: 10px;
+            margin-left: 0.4rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-logout {
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+            padding: 0.45rem 0.9rem;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-logout:hover {
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.4);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent);
+        }
+
+        .metric-card.warning::after { background: var(--warning); }
+        .metric-card.cyan::after { background: var(--cyan); }
+
+        .metric-label {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .metric-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        /* Controls */
+        .controls-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 0.65rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #0f172a;
+            font-weight: 600;
+            padding: 0.65rem 1.25rem;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+            color: #0f172a;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-cyan {
+            background: var(--cyan);
+            color: #0f172a;
+        }
+
+        .btn-cyan:hover {
+            background: #0ea5e9;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 0.75rem 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+        }
+
+        tr:hover td {
+            background: rgba(51, 65, 85, 0.25);
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 600;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+        }
+
+        .badge-confirmed {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+
+        .badge-cancelled {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+        }
+
+        /* Pagination */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .pagination-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.45rem 0.85rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: var(--cyan);
+            color: #0f172a;
+            border-color: var(--cyan);
+        }
+
+        .page-btn.active {
+            background: var(--cyan);
+            color: #0f172a;
+            font-weight: 700;
+            border-color: var(--cyan);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .pagination-summary {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .page-jump-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .page-jump-input {
+            width: 60px !important;
+            padding: 0.35rem 0.5rem !important;
+            text-align: center;
+            font-size: 0.85rem !important;
+        }
+
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top: 2px solid var(--accent);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert-box {
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .alert-success { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .alert-error { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        .info-callout {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 3px solid var(--accent);
+            padding: 0.85rem 1rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-section">
+            <div class="brand">
+                <span class="brand-badge">VIKMO</span>
+                <span class="brand-title">Distributor Operations</span>
+            </div>
+            <div class="distributor-chip">
+                <span class="role">Distributor Operations</span>
+                <span>&bull; {{ user.username }}</span>
+            </div>
+        </div>
+
+        <ul class="nav-tabs">
+            <li><button class="nav-btn active" onclick="switchTab('dashboard')">Overview</button></li>
+            <li>
+                <button class="nav-btn" onclick="switchTab('pending')" id="tab-btn-pending">
+                    Pending Orders <span class="tab-badge" id="pending-counter">0</span>
+                </button>
+            </li>
+            <li><button class="nav-btn" onclick="switchTab('orders')">All Orders</button></li>
+            <li><button class="nav-btn" onclick="switchTab('products')">Catalogue & Stock</button></li>
+            <li><button class="nav-btn" onclick="switchTab('forecasting')">Forecasting</button></li>
+            <li><button class="nav-btn" onclick="switchTab('supplier')">Supplier Sync</button></li>
+        </ul>
+
+        <div class="header-actions">
+            <a href="/distributor/logout/" class="btn-logout" title="Sign out of Distributor Operations">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Logout
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div id="global-alert" class="alert-box"></div>
+
+        <!-- 1. DISTRIBUTOR OVERVIEW TAB -->
+        <section id="tab-dashboard" class="tab-content active">
+            <div class="metrics-grid">
+                <div class="metric-card warning">
+                    <div class="metric-label">Pending Dealer Orders</div>
+                    <div class="metric-value" id="stat-pending" style="color: var(--warning);">-</div>
+                    <div class="metric-sub">Awaiting your approval & confirmation</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Catalogue Products</div>
+                    <div class="metric-value" id="stat-products">600</div>
+                    <div class="metric-sub">Authoritative SKUs</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Active Dealers</div>
+                    <div class="metric-value" id="stat-dealers">25</div>
+                    <div class="metric-sub">Registered distribution network</div>
+                </div>
+                <div class="metric-card cyan">
+                    <div class="metric-label">Forecast SKUs</div>
+                    <div class="metric-value" id="stat-forecast">40</div>
+                    <div class="metric-sub">160 weekly future predictions</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">System Health</div>
+                    <div class="metric-value" style="color: var(--success);" id="stat-health">ONLINE</div>
+                    <div class="metric-sub">PostgreSQL 18 & REST APIs</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Central Operations Overview</span>
+                    <button class="btn btn-secondary" onclick="loadDashboardOverview()">Refresh Metrics</button>
+                </div>
+                <div class="info-callout">
+                    <strong>Distributor Authority:</strong> You are authenticated as central warehouse distributor (<code>{{ user.username }}</code>). You hold the authority to review pending draft orders placed by dealers, confirm orders to allocate stock, run machine learning demand forecasting, and synchronize the external supplier catalogue feed.
+                </div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn" onclick="switchTab('pending')">Review Pending Orders</button>
+                    <button class="btn btn-secondary" onclick="switchTab('orders')">View All Orders</button>
+                    <button class="btn btn-secondary" onclick="switchTab('forecasting')">Reorder Planning</button>
+                    <button class="btn btn-secondary" onclick="switchTab('supplier')">Supplier Sync</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. PENDING DEALER ORDERS TAB (ORDER APPROVAL WORKFLOW) -->
+        <section id="tab-pending" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <span class="card-title">Pending Dealer Orders (Awaiting Approval)</span>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+                            Orders placed by dealers in status <strong>DRAFT (Pending)</strong>. Confirming an order atomically locks inventory, verifies stock availability, decrements warehouse stock, and marks the order as <strong>CONFIRMED</strong>.
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="loadPendingOrders()">Refresh Pending</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order Number</th>
+                                <th>Dealer</th>
+                                <th>Date Submitted</th>
+                                <th>Items & Quantities</th>
+                                <th>Subtotal</th>
+                                <th>GST (18%)</th>
+                                <th>Grand Total</th>
+                                <th style="text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pending-orders-body">
+                            <tr><td colspan="8" style="text-align:center; color: var(--text-muted); padding: 2rem;">Loading pending orders...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. ALL ORDERS TAB -->
+        <section id="tab-orders" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">All Network Orders</span>
+                    <div style="display: flex; gap: 0.75rem; align-items: center;">
+                        <select id="filter-order-status" style="width: 160px; padding: 0.4rem 0.75rem; font-size: 0.85rem;" onchange="loadAllOrders()">
+                            <option value="">All Statuses</option>
+                            <option value="DRAFT">Pending (DRAFT)</option>
+                            <option value="CONFIRMED">Confirmed</option>
+                            <option value="CANCELLED">Cancelled</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="loadAllOrders()">Refresh</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order Number</th>
+                                <th>Dealer</th>
+                                <th>Status</th>
+                                <th>Items</th>
+                                <th>Subtotal</th>
+                                <th>GST (18%)</th>
+                                <th>Grand Total</th>
+                                <th>Confirmed By</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-orders-body">
+                            <tr><td colspan="9" style="text-align:center; color: var(--text-muted); padding: 2rem;">Loading orders...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. CATALOGUE & STOCK TAB -->
+        <section id="tab-products" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <span class="card-title">Authoritative Catalogue & Live Warehouse Inventory</span>
+                        <div id="prod-count-summary" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+                            Showing 1–20 of 600 catalogue products
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;" onclick="resetProductFilters()">Clear Filters</button>
+                </div>
+
+                <div class="controls-row">
+                    <div class="input-group" style="flex: 2; min-width: 220px;">
+                        <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Search SKU / Name / Brand</label>
+                        <input type="text" id="prod-search" placeholder="Search by name, SKU, or brand..." onkeyup="if(event.key==='Enter') searchProducts(1)">
+                    </div>
+                    <div class="input-group" style="min-width: 170px;">
+                        <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Category</label>
+                        <select id="prod-category" onchange="searchProducts(1)">
+                            <option value="">All Categories (11)</option>
+                            <option value="Body & Styling">Body & Styling</option>
+                            <option value="Brakes">Brakes</option>
+                            <option value="Car Care">Car Care</option>
+                            <option value="Controls & Grips">Controls & Grips</option>
+                            <option value="Drivetrain">Drivetrain</option>
+                            <option value="Engine & Oils">Engine & Oils</option>
+                            <option value="Filters">Filters</option>
+                            <option value="Lighting & Electrical">Lighting & Electrical</option>
+                            <option value="Rider Gear">Rider Gear</option>
+                            <option value="Tyres & Tubes">Tyres & Tubes</option>
+                            <option value="Universal Accessories">Universal Accessories</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="min-width: 170px;">
+                        <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Vehicle Fitment</label>
+                        <input type="text" id="prod-vehicle" placeholder="e.g. Pulsar 150, Activa..." onkeyup="if(event.key==='Enter') searchProducts(1)">
+                    </div>
+                    <div class="input-group" style="max-width: 130px;">
+                        <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Per Page</label>
+                        <select id="prod-page-size" onchange="searchProducts(1)">
+                            <option value="20" selected>20 per page</option>
+                            <option value="50">50 per page</option>
+                            <option value="100">100 per page</option>
+                        </select>
+                    </div>
+                    <div style="align-self: flex-end;">
+                        <button class="btn btn-cyan" id="btn-search-products" onclick="searchProducts(1)">Search</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="products-table">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Fitment</th>
+                                <th>Distributor Price</th>
+                                <th>Warehouse Stock</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-body">
+                            <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Loading catalogue...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination-container" id="products-pagination-container">
+                    <div class="pagination-summary" id="prod-pagination-summary">
+                        Page 1 of 30 &bull; 600 total products
+                    </div>
+
+                    <div class="pagination-nav" id="prod-pagination-nav"></div>
+
+                    <div class="page-jump-box">
+                        <span>Go to:</span>
+                        <input type="number" id="prod-jump-page" class="page-jump-input" min="1" max="30" value="1" onkeyup="if(event.key==='Enter') jumpToProductPage()">
+                        <button class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="jumpToProductPage()">Go</button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1rem; text-align: center;">
+                    <button class="btn btn-secondary" id="btn-load-more" onclick="loadMoreProducts()" style="display: none;">
+                        Load Next Page (+20)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. FORECASTING & REORDER TAB -->
+        <section id="tab-forecasting" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <span class="card-title">Inventory Reorder Recommendations (40 SKUs)</span>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+                            Formula: <code>Reorder Point = Lead Time Demand + ceil(1.65 × σ × √L)</code> (95% cycle-service level)
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="loadReorders()">Recalculate with Live Stock</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Current Stock</th>
+                                <th>Lead Time (wks)</th>
+                                <th>Lead Time Demand</th>
+                                <th>Safety Stock</th>
+                                <th>Reorder Point</th>
+                                <th>Suggested Reorder</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reorder-body">
+                            <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Loading reorder metrics...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. SUPPLIER SYNC TAB -->
+        <section id="tab-supplier" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Supplier Feed Synchronization</span>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.25rem;">
+                    Perform atomic synchronization against the external supplier mock API. Retries up to 5 times on 429 rate limits and 5xx errors, validates schemas, rejects invalid prices, updates catalogue prices, and keeps warehouse inventory records intact.
+                </p>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <button class="btn" id="sync-trigger-btn" onclick="triggerSupplierSync()">
+                        <span>Trigger Full Supplier Sync</span>
+                    </button>
+                    <span id="sync-status-msg" style="font-size: 0.9rem; color: var(--text-muted);"></span>
+                </div>
+
+                <div id="sync-result-card" style="margin-top: 1.5rem; display: none; background: rgba(15, 23, 42, 0.6); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                    <h4 style="margin-bottom: 0.75rem; color: var(--accent);">Last Synchronization Summary</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; font-size: 0.9rem;">
+                        <div>Created Products: <strong id="sync-res-created">0</strong></div>
+                        <div>Updated Products: <strong id="sync-res-updated">0</strong></div>
+                        <div>Unchanged Products: <strong id="sync-res-unchanged">0</strong></div>
+                        <div>Rejected Items: <strong id="sync-res-rejected">0</strong></div>
+                        <div>Pages Fetched: <strong id="sync-res-pages">0</strong></div>
+                        <div>Requests Made: <strong id="sync-res-requests">0</strong></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        VIKMO Central Distributor Operations Portal &bull; Authenticated User: {{ user.username }} &bull; PostgreSQL 18
+    </footer>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        function showAlert(msg, isError = false) {
+            const el = document.getElementById('global-alert');
+            el.className = 'alert-box ' + (isError ? 'alert-error' : 'alert-success');
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 4500);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+            const targetSection = document.getElementById('tab-' + tabId);
+            if (targetSection) targetSection.classList.add('active');
+
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => {
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            if (tabId === 'dashboard') loadDashboardOverview();
+            if (tabId === 'pending') loadPendingOrders();
+            if (tabId === 'orders') loadAllOrders();
+            if (tabId === 'products') searchProducts();
+            if (tabId === 'forecasting') loadReorders();
+        }
+
+        // --- 1. Dashboard Overview ---
+        async function loadDashboardOverview() {
+            try {
+                const [pRes, dRes, pendingRes] = await Promise.all([
+                    fetch('/api/products/?page_size=1'),
+                    fetch('/api/dealers/?page_size=1'),
+                    fetch('/api/distributor/orders/pending/')
+                ]);
+
+                if (pRes.ok) {
+                    const pData = await pRes.json();
+                    document.getElementById('stat-products').textContent = pData.count || 600;
+                }
+                if (dRes.ok) {
+                    const dData = await dRes.json();
+                    document.getElementById('stat-dealers').textContent = dData.count || 25;
+                }
+                if (pendingRes.ok) {
+                    const pendData = await pendingRes.json();
+                    const count = pendData.count || 0;
+                    document.getElementById('stat-pending').textContent = count;
+                    document.getElementById('pending-counter').textContent = count;
+                }
+            } catch (err) {
+                console.error("Dashboard overview error", err);
+            }
+        }
+
+        // --- 2. Pending Orders (Distributor Review & Approval) ---
+        async function loadPendingOrders() {
+            const tbody = document.getElementById('pending-orders-body');
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="spinner"></div> Loading pending orders...</td></tr>';
+
+            try {
+                const res = await fetch('/api/distributor/orders/pending/');
+                const data = await res.json();
+                tbody.innerHTML = '';
+
+                const count = data.count || (data.results ? data.results.length : 0);
+                document.getElementById('stat-pending').textContent = count;
+                document.getElementById('pending-counter').textContent = count;
+
+                if (!data.results || data.results.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted); padding: 2.5rem;">&#10003; No pending orders awaiting approval. All orders are up to date!</td></tr>';
+                    return;
+                }
+
+                data.results.forEach(o => {
+                    const tr = document.createElement('tr');
+                    const dateStr = o.created_at ? new Date(o.created_at).toLocaleString() : '-';
+
+                    let itemsDesc = '';
+                    if (o.items && o.items.length > 0) {
+                        itemsDesc = o.items.map(it => `<span style="font-family: monospace; color: var(--cyan);">${it.sku}</span> &times; <strong>${it.quantity}</strong>`).join(', ');
+                    } else {
+                        itemsDesc = '0 items';
+                    }
+
+                    const dealerLabel = `${o.dealer_code || ('DLR-' + o.dealer_id)} &bull; ${o.dealer_name || ''}`;
+
+                    tr.innerHTML = `
+                        <td><strong style="font-family: monospace; color: var(--cyan); font-size: 0.95rem;">${o.order_number}</strong></td>
+                        <td>${dealerLabel}</td>
+                        <td style="font-size: 0.8rem; color: var(--text-muted);">${dateStr}</td>
+                        <td>${itemsDesc}</td>
+                        <td>₹${o.subtotal}</td>
+                        <td>₹${o.tax_total}</td>
+                        <td><strong style="color: var(--accent); font-size: 0.95rem;">₹${o.grand_total}</strong></td>
+                        <td style="text-align: center;">
+                            <div style="display: inline-flex; gap: 0.5rem;">
+                                <button class="btn" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="confirmDistributorOrder('${o.order_number}')">
+                                    &#10003; Confirm Order
+                                </button>
+                                <button class="btn btn-secondary" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; color: var(--danger);" onclick="cancelDistributorOrder('${o.order_number}')">
+                                    Cancel
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error("Pending orders error", err);
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--danger);">Failed to load pending orders.</td></tr>';
+            }
+        }
+
+        async function confirmDistributorOrder(orderNo) {
+            try {
+                const res = await fetch(`/api/distributor/orders/${orderNo}/confirm/`, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrftoken }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showAlert(`Order ${orderNo} CONFIRMED! Stock decremented and order is approved.`);
+                    loadPendingOrders();
+                    loadDashboardOverview();
+                } else {
+                    showAlert(data.error ? data.error.message : "Confirmation failed", true);
+                }
+            } catch (err) {
+                showAlert("Error confirming order", true);
+            }
+        }
+
+        async function cancelDistributorOrder(orderNo) {
+            if (!confirm(`Cancel order ${orderNo}?`)) return;
+            try {
+                const res = await fetch(`/api/orders/${orderNo}/cancel/`, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrftoken }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showAlert(`Order ${orderNo} cancelled.`);
+                    loadPendingOrders();
+                    loadDashboardOverview();
+                } else {
+                    showAlert(data.error ? data.error.message : "Cancellation failed", true);
+                }
+            } catch (err) {
+                showAlert("Error cancelling order", true);
+            }
+        }
+
+        // --- 3. All Orders Tab ---
+        async function loadAllOrders() {
+            const tbody = document.getElementById('all-orders-body');
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;"><div class="spinner"></div> Loading orders...</td></tr>';
+
+            const statusFilter = document.getElementById('filter-order-status').value;
+            let url = '/api/orders/?page_size=50';
+            if (statusFilter) url += `&status=${encodeURIComponent(statusFilter)}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                tbody.innerHTML = '';
+
+                if (!data.results || data.results.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color: var(--text-muted); padding: 2rem;">No orders found.</td></tr>';
+                    return;
+                }
+
+                data.results.forEach(o => {
+                    const tr = document.createElement('tr');
+                    let statusBadge = '<span class="badge badge-pending">Pending</span>';
+                    if (o.status === 'CONFIRMED') {
+                        statusBadge = '<span class="badge badge-confirmed">Confirmed</span>';
+                    } else if (o.status === 'CANCELLED') {
+                        statusBadge = '<span class="badge badge-cancelled">Cancelled</span>';
+                    }
+
+                    const itemsCount = o.items ? o.items.length : 0;
+                    const dateStr = o.created_at ? new Date(o.created_at).toLocaleString() : '-';
+                    const dealerLabel = `${o.dealer_code || ('DLR-' + o.dealer_id)} &bull; ${o.dealer_name || ''}`;
+                    const confirmedBy = o.status === 'CONFIRMED' ? (o.confirmed_by_username || 'distributor') : '&mdash;';
+
+                    tr.innerHTML = `
+                        <td><strong style="font-family: monospace; color: var(--cyan);">${o.order_number}</strong></td>
+                        <td>${dealerLabel}</td>
+                        <td>${statusBadge}</td>
+                        <td>${itemsCount} item(s)</td>
+                        <td>₹${o.subtotal}</td>
+                        <td>₹${o.tax_total}</td>
+                        <td><strong>₹${o.grand_total}</strong></td>
+                        <td style="font-size: 0.8rem; color: var(--text-muted);">${confirmedBy}</td>
+                        <td style="font-size: 0.8rem; color: var(--text-muted);">${dateStr}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color: var(--danger);">Failed to load orders.</td></tr>';
+            }
+        }
+
+        // --- 4. Products Catalogue & Stock ---
+        let currentProductPage = 1;
+        let totalProductPages = 1;
+        let totalProductCount = 0;
+
+        async function searchProducts(page = 1, append = false) {
+            currentProductPage = page;
+            const query = document.getElementById('prod-search').value.trim();
+            const cat = document.getElementById('prod-category').value;
+            const vehicle = document.getElementById('prod-vehicle') ? document.getElementById('prod-vehicle').value.trim() : '';
+            const pageSize = parseInt(document.getElementById('prod-page-size').value) || 20;
+
+            const tbody = document.getElementById('products-body');
+            const summaryEl = document.getElementById('prod-count-summary');
+            const pagSummaryEl = document.getElementById('prod-pagination-summary');
+            const loadMoreBtn = document.getElementById('btn-load-more');
+
+            if (!append) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="spinner"></div> Loading catalogue products...</td></tr>';
+            }
+
+            let url = `/api/products/?page=${page}&page_size=${pageSize}`;
+            if (query) url += `&search=${encodeURIComponent(query)}`;
+            if (cat) url += `&category=${encodeURIComponent(cat)}`;
+            if (vehicle) url += `&vehicle=${encodeURIComponent(vehicle)}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (!res.ok) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--danger);">Failed to load products.</td></tr>`;
+                    return;
+                }
+
+                totalProductCount = data.count || 0;
+                totalProductPages = Math.ceil(totalProductCount / pageSize) || 1;
+
+                if (!append) tbody.innerHTML = '';
+
+                if (!data.results || data.results.length === 0) {
+                    if (!append) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted); padding: 2rem;">No products found matching criteria.</td></tr>';
+                        if (summaryEl) summaryEl.textContent = 'Showing 0 of 0 products';
+                        if (pagSummaryEl) pagSummaryEl.textContent = 'Page 0 of 0 • 0 total products';
+                        renderPaginationControls(1, 0);
+                        if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+                    }
+                    return;
+                }
+
+                const currentLoaded = append ? tbody.querySelectorAll('tr').length + data.results.length : data.results.length;
+                const startIdx = append ? 1 : ((page - 1) * pageSize) + 1;
+                const endIdx = append ? currentLoaded : Math.min(page * pageSize, totalProductCount);
+
+                if (summaryEl) summaryEl.textContent = `Showing ${startIdx}–${endIdx} of ${totalProductCount} catalogue products`;
+                if (pagSummaryEl) pagSummaryEl.textContent = `Page ${page} of ${totalProductPages} • ${totalProductCount} total products`;
+
+                data.results.forEach(p => {
+                    const tr = document.createElement('tr');
+                    const inStock = p.stock > 0;
+                    tr.innerHTML = `
+                        <td><strong style="color: var(--cyan); font-family: monospace;">${p.sku}</strong></td>
+                        <td>${p.name}</td>
+                        <td><span style="font-size: 0.8rem; background: rgba(56, 189, 248, 0.1); padding: 0.15rem 0.5rem; border-radius: 4px;">${p.category}</span></td>
+                        <td>${p.vehicle_fitment}</td>
+                        <td>₹${p.price}</td>
+                        <td><strong style="color: ${inStock ? 'var(--success)' : 'var(--danger)'};">${p.stock}</strong></td>
+                        <td><span class="badge ${inStock ? 'badge-confirmed' : 'badge-cancelled'}">${inStock ? 'IN STOCK' : 'OUT OF STOCK'}</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                renderPaginationControls(page, totalProductPages);
+
+                const jumpInput = document.getElementById('prod-jump-page');
+                if (jumpInput) {
+                    jumpInput.max = totalProductPages;
+                    jumpInput.value = page;
+                }
+
+                if (loadMoreBtn) {
+                    if (endIdx < totalProductCount) {
+                        loadMoreBtn.style.display = 'inline-flex';
+                        loadMoreBtn.textContent = `Load Next Page (+${Math.min(pageSize, totalProductCount - endIdx)})`;
+                    } else {
+                        loadMoreBtn.style.display = 'none';
+                    }
+                }
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--danger);">Network error loading catalogue.</td></tr>';
+            }
+        }
+
+        function renderPaginationControls(current, total) {
+            const nav = document.getElementById('prod-pagination-nav');
+            if (!nav) return;
+            nav.innerHTML = '';
+            if (total <= 1) return;
+
+            const btnFirst = document.createElement('button');
+            btnFirst.className = 'page-btn';
+            btnFirst.innerHTML = '&laquo; First';
+            btnFirst.disabled = current <= 1;
+            btnFirst.onclick = () => searchProducts(1);
+            nav.appendChild(btnFirst);
+
+            const btnPrev = document.createElement('button');
+            btnPrev.className = 'page-btn';
+            btnPrev.innerHTML = '&lsaquo; Prev';
+            btnPrev.disabled = current <= 1;
+            btnPrev.onclick = () => searchProducts(current - 1);
+            nav.appendChild(btnPrev);
+
+            let start = Math.max(1, current - 2);
+            let end = Math.min(total, current + 2);
+
+            if (start > 1) {
+                const b1 = document.createElement('button');
+                b1.className = 'page-btn';
+                b1.textContent = '1';
+                b1.onclick = () => searchProducts(1);
+                nav.appendChild(b1);
+                if (start > 2) {
+                    const dots = document.createElement('span');
+                    dots.style.color = 'var(--text-muted)';
+                    dots.textContent = '...';
+                    nav.appendChild(dots);
+                }
+            }
+
+            for (let i = start; i <= end; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'page-btn' + (i === current ? ' active' : '');
+                btn.textContent = i;
+                btn.onclick = () => searchProducts(i);
+                nav.appendChild(btn);
+            }
+
+            if (end < total) {
+                if (end < total - 1) {
+                    const dots = document.createElement('span');
+                    dots.style.color = 'var(--text-muted)';
+                    dots.textContent = '...';
+                    nav.appendChild(dots);
+                }
+                const bLast = document.createElement('button');
+                bLast.className = 'page-btn';
+                bLast.textContent = total;
+                bLast.onclick = () => searchProducts(total);
+                nav.appendChild(bLast);
+            }
+
+            const btnNext = document.createElement('button');
+            btnNext.className = 'page-btn';
+            btnNext.innerHTML = 'Next &rsaquo;';
+            btnNext.disabled = current >= total;
+            btnNext.onclick = () => searchProducts(current + 1);
+            nav.appendChild(btnNext);
+
+            const btnLast = document.createElement('button');
+            btnLast.className = 'page-btn';
+            btnLast.innerHTML = 'Last &raquo;';
+            btnLast.disabled = current >= total;
+            btnLast.onclick = () => searchProducts(total);
+            nav.appendChild(btnLast);
+        }
+
+        function jumpToProductPage() {
+            const input = document.getElementById('prod-jump-page');
+            const page = parseInt(input.value);
+            if (page >= 1 && page <= totalProductPages) {
+                searchProducts(page);
+            } else {
+                showAlert(`Please enter a page number between 1 and ${totalProductPages}`, true);
+            }
+        }
+
+        function loadMoreProducts() {
+            if (currentProductPage < totalProductPages) {
+                searchProducts(currentProductPage + 1, true);
+            }
+        }
+
+        function resetProductFilters() {
+            document.getElementById('prod-search').value = '';
+            document.getElementById('prod-category').value = '';
+            if (document.getElementById('prod-vehicle')) document.getElementById('prod-vehicle').value = '';
+            document.getElementById('prod-page-size').value = '20';
+            searchProducts(1);
+        }
+
+        // --- 5. Forecasting & Reorders ---
+        async function loadReorders() {
+            const tbody = document.getElementById('reorder-body');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="spinner"></div> Computing safety stock & reorder points...</td></tr>';
+            try {
+                const res = await fetch('/api/reorder-suggestions/');
+                const data = await res.json();
+                tbody.innerHTML = '';
+                if (!data.results || data.results.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No reorder data available.</td></tr>';
+                    return;
+                }
+                data.results.forEach(r => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong style="color: var(--cyan); font-family: monospace;">${r.sku}</strong></td>
+                        <td>${r.current_stock}</td>
+                        <td>${r.lead_time_weeks}</td>
+                        <td>${r.lead_time_demand}</td>
+                        <td>${r.safety_stock}</td>
+                        <td>${r.reorder_point}</td>
+                        <td><strong style="color: ${r.reorder_qty > 0 ? 'var(--warning)' : 'var(--text-muted)'};">${r.reorder_qty}</strong></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--danger);">Failed to load reorder suggestions.</td></tr>';
+            }
+        }
+
+        // --- 6. Supplier Sync ---
+        async function triggerSupplierSync() {
+            const btn = document.getElementById('sync-trigger-btn');
+            const msg = document.getElementById('sync-status-msg');
+            const card = document.getElementById('sync-result-card');
+
+            btn.disabled = true;
+            msg.textContent = "Fetching paginated feed and retrying on limits...";
+
+            try {
+                const res = await fetch('/api/sync/supplier/', {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrftoken }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showAlert("Supplier sync completed successfully!");
+                    msg.textContent = `Completed: ${data.created} created, ${data.updated} updated, ${data.unchanged} unchanged.`;
+
+                    document.getElementById('sync-res-created').textContent = data.created;
+                    document.getElementById('sync-res-updated').textContent = data.updated;
+                    document.getElementById('sync-res-unchanged').textContent = data.unchanged;
+                    document.getElementById('sync-res-rejected').textContent = data.rejected ? data.rejected.length : 0;
+                    document.getElementById('sync-res-pages').textContent = data.pages_fetched;
+                    document.getElementById('sync-res-requests').textContent = data.requests_made;
+                    card.style.display = 'block';
+                } else {
+                    showAlert(data.error ? data.error.message : "Sync failed", true);
+                    msg.textContent = `Failed with status ${res.status}: ${data.error ? data.error.message : 'Error'}`;
+                }
+            } catch (err) {
+                showAlert("Network connection error during sync.", true);
+                msg.textContent = "Connection failed.";
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboardOverview();
+            loadPendingOrders();
+        });
+    </script>
+</body>
+</html>
