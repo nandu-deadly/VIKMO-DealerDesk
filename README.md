@@ -287,4 +287,4 @@ python smoke_test.py --base-url http://127.0.0.1:8000 --all
 ## 8. Repository & Demonstration Links
 
 - **Public GitHub Repository:** `[PENDING MANUAL ACTION: Add your public GitHub repository URL here if uploading to GitHub]`
-- **5-Minute Video Walkthrough:** `[PENDING MANUAL ACTION: Record and attach your actual 5-minute walkthrough video link here (e.g. Loom, YouTube, or Google Drive) prior to submission. A complete 5-minute presentation structure is prepared in DEMO_SCRIPT.md.]`
+- **5-Minute Video Walkthrough:** https://youtu.be/gvwejo2sw00?si=22ygByQSYBrONH1y
